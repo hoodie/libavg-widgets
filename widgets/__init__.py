@@ -4,7 +4,7 @@ from layout      import Orientation
 from divnodeplus import DivNodePlus
 from bars        import ButtonBar, ToggleButtonBar
 
-import os, widget_config
+import math, os, widget_config
 import libavg
 from libavg    import avg, widget
 import libavg.geom
@@ -103,3 +103,109 @@ def keepNodeInRect(node, tl, br):
         node.pos = (node.pos.x, tl.y-node.size.y/2)
     if center.y > br.y:
         node.pos = (node.pos.x, br.y-node.size.y/2)
+
+class BarChart(avg.DivNode):
+    def __init__(self, height=200, width=200, barcount=5, label="unnamed sensor", parent=None, *args, **kwargs):
+        super(BarChart, self).__init__(*args, **kwargs)
+
+        self.__label = avg.WordsNode(
+                pos=(0,0),
+                width=210,
+                text=label)
+
+        layout = self.__layout = VLayout()
+        bars = self.__bars = HLayout(width=width)
+
+        for i in range(barcount):
+            bars.appendChild(
+                    avg.RectNode(
+                        size=((width/barcount)-2,height),
+                        opacity=0,
+                        fillopacity=1,
+                        fillcolor="FFFF00")
+                    )
+
+        layout.appendChild(bars)
+        layout.appendChild(self.__label)
+        self.appendChild(layout)
+
+        origin = avg.Point2D(100,100)
+
+        color_x = "FF0000"
+        color_y = "00FF00"
+        color_z = "0000FF"
+
+        self.x_axis = avg.LineNode(
+                pos1=origin, pos2=origin,
+                strokewidth=2, color=color_x, parent=self)
+
+        self.y_axis = avg.LineNode(
+                pos1=origin, pos2=origin,
+                strokewidth=2, color=color_y, parent=self)
+
+        self.z_axis = avg.LineNode(
+                pos1=origin, pos2=origin,
+                strokewidth=2, color=color_z, parent=self)
+
+        self.updateLines(100,100,100)
+
+    def setLabel(self, label):
+        self.__label.text = label
+
+    def setVals(self, *v):
+        m = 1#max(v)
+
+        for i, child in enumerate(self.__bars.children):
+            print v[i]/m
+            child.pos = (child.pos.x, 200 - ((v[i]*1.0)/m) * 200)
+            child.size = (child.size.x, ((v[i]*1.0)/m) * 200)
+
+    def updateLines(self, x, y, z,angle=0):
+        x_angle = math.radians(angle)
+        y_angle = math.radians(angle - 120)
+        z_angle = math.radians(angle + 120)
+
+        self.x_axis.pos2 = self.x_axis.pos1 + (math.sin(x_angle)*x,math.cos(x_angle)*x)
+        self.y_axis.pos2 = self.y_axis.pos1 + (math.sin(y_angle)*y,math.cos(y_angle)*y)
+        self.z_axis.pos2 = self.z_axis.pos1 + (math.sin(z_angle)*z,math.cos(z_angle)*z)
+
+class SensorVis(avg.DivNode):
+    def __init__(self, height=200, width=200, label="unnamed sensor", parent=None, *args, **kwargs):
+        super(SensorVis, self).__init__(*args, **kwargs)
+        self.label=label
+        origin = avg.Point2D(100,100)
+
+        color_x = "FF0000"
+        color_y = "00FF00"
+        color_z = "0000FF"
+
+        self.x_axis = avg.LineNode(
+                pos1=origin, pos2=origin,
+                strokewidth=2, color=color_x, parent=self)
+
+        self.y_axis = avg.LineNode(
+                pos1=origin, pos2=origin,
+                strokewidth=2, color=color_y, parent=self)
+
+        self.z_axis = avg.LineNode(
+                pos1=origin, pos2=origin,
+                strokewidth=2, color=color_z, parent=self)
+
+        self.label = avg.WordsNode(
+                pos=(0,0),
+                width=210,
+                text=self.label,
+                parent=self)
+
+        self.updateLines(100,100,100)
+
+    def setLabel(self, label):
+        self.label.text = label
+    def updateLines(self, x, y, z,angle=0):
+        x_angle = math.radians(angle)
+        y_angle = math.radians(angle - 120)
+        z_angle = math.radians(angle + 120)
+
+        self.x_axis.pos2 = self.x_axis.pos1 + (math.sin(x_angle)*x,math.cos(x_angle)*x)
+        self.y_axis.pos2 = self.y_axis.pos1 + (math.sin(y_angle)*y,math.cos(y_angle)*y)
+        self.z_axis.pos2 = self.z_axis.pos1 + (math.sin(z_angle)*z,math.cos(z_angle)*z)
