@@ -60,5 +60,5 @@ class MainDiv(app.MainDiv):
     def onArgvParsed(self, options, args, parser):
         self.argvoptions = options
 
-    
+
 app.App().run(MainDiv(), app_resolution="800x600")

@@ -27,22 +27,28 @@ from layout import Layout
 
 class ButtonBar(Layout):
     CLICKED = libavg.Publisher.genMessageID()
+    PRESSED = libavg.Publisher.genMessageID()
     def __init__(self, buttons, spacing = 4, **kwargs):
         super(ButtonBar, self).__init__(**kwargs)
-    
+
         self.publish(self.CLICKED)
+        self.publish(self.PRESSED)
         self.buttons = buttons
         self.appendChildren(self.buttons)
-        
+
         for button in buttons:
             button.subscribe(button.CLICKED, lambda button=button: self.__onClicked(button.tag))
-            
+            button.subscribe(button.PRESSED, lambda button=button: self.__onPressed(button.tag))
+
     def __onClicked(self, tag):
         self.notifySubscribers(self.CLICKED, [tag])
 
+    def __onPressed(self, tag):
+        self.notifySubscribers(self.PRESSED, [tag])
+
 class ToggleButtonBar(Layout):
     TOGGLED = libavg.Publisher.genMessageID()
-    
+
     def __init__(self, buttons, onToggled = None, **kwargs):
         super(ToggleButtonBar, self).__init__(**kwargs)
 
@@ -52,7 +58,7 @@ class ToggleButtonBar(Layout):
 
         self.buttons = buttons
         self.appendChildren(self.buttons)
-        
+
         for button in buttons:
             button.subscribe(button.TOGGLED, lambda checked, button=button:
                 self.__onToggled(button))
@@ -65,13 +71,13 @@ class ToggleButtonBar(Layout):
         for btn in self.buttons:
             btn.enabled = True
             btn.checked = False
-        if checked: 
+        if checked:
             button.enabled = False
             button.checked = True
         else:
             button.enabled = True
             button.checked = False
-            
+
     def toggle(self, index, checked = True):
         button = self.buttons[index]
         self.toggle_silently(index,checked = True)
@@ -81,7 +87,7 @@ class ToggleButtonBar(Layout):
         for btn in self.buttons:
             btn.enabled = True
             btn.checked = False
-        
+
     def __onToggled(self, button):
         if button.checked:
             button.enabled = False

@@ -114,12 +114,12 @@ class RoomWidget(avg.DivNode):
             z *= 15
 
             z = z * depth
-            new_verts.append((x+z+offset,   y-z+offset))
+            new_verts.append((x+z+offset, y-z+offset))
 
             #z1 = z * .8
-            #z2 = (z+dist)/200.0
+            #z2 = (z+dist)/150.0
             #new_verts.append(( (x+z1)/z2 +offset, (y+z1)/z2 +offset))
 
-            #z = (z+dist)/90.0
+            #z = (z+dist)/170.0
             #new_verts.append( (x/z+offset,   y/z+offset))
         return new_verts
