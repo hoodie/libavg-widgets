@@ -44,8 +44,8 @@ def Slider(onPressed = None, onChanged = None, size = 650, thumbPos = 0.5):
         slider.subscribe(avg_widget.Slider.PRESSED, onPressed)
     return slider
 
-def Label(string, color="000000"):
-    return avg.WordsNode(text = string, color=color, fontsize=40)
+def Label(string, color="000000", size=20):
+    return avg.WordsNode(text = string, color=color, fontsize=size)
 
 def keepNodeInRect(node, tl, br):
     tl, br = map(avg.Point2D, [tl, br])

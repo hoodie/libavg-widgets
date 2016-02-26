@@ -41,7 +41,7 @@ class BaseWidget(DivNode):
         return [self.getChild(i) for i in xrange(self.getNumChildren())]
 
     def resizeChildren(self, new_size):
-        print "resizing children to"
+        #print "resizing children to"
         try:
             ratio = new_size.x/self.old_size.x
         except ZeroDivisionError:
@@ -54,20 +54,20 @@ class BaseWidget(DivNode):
                 child.scale( ratio )
             except AttributeError:
                 child.size *= ratio
-            print "scaling", child, "by", ratio
+            #print "scaling", child, "by", ratio
 
         return True
 
     def resize(self, new_size):
-        print "resizing to", new_size
+        #print "resizing to", new_size
         self.old_size  = self.size
         self.size = new_size
         self.resizeChildren(self.size)
         self.old_size = self.size
-        print "called resizeChildren somewhere along the way"
+        #print "called resizeChildren somewhere along the way"
 
     def scale(self, ratio):
-        print "scaling", ratio
+        #print "scaling", ratio
         self.resize(self.size * ratio)
 
     def fillParent(self,size = None):

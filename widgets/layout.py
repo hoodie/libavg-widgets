@@ -181,12 +181,12 @@ class GridLayout(BaseWidget):
         for i, child in enumerate(m for m in self.__layoutedChildren if m.active):
 
             if self.ORIENTATION == Orientation.VERTICAL:
-                col_index=i/cols
+                col_index=i/rows
                 row_index=i%rows
 
             elif self.ORIENTATION == Orientation.HORIZONTAL:
                 col_index=i%cols
-                row_index=i/rows
+                row_index=i/cols
 
 
             width  = max(col_widths .get(col_index, -1),  child.width + self.spacing/2)
@@ -195,26 +195,23 @@ class GridLayout(BaseWidget):
             col_widths[col_index]  = width
             row_heights[row_index] = height
 
-            print col_index, row_index, width, height
-
         col_widths[-1] = 0 # hack for the [-1] case
         row_heights[-1] = 0 # hack for the [-1] case
 
-        # layouting run
+        # positioning run
         for i, child in enumerate(m for m in self.__layoutedChildren if m.active):
 
             if self.ORIENTATION == Orientation.VERTICAL:
-                col_index=i/cols
+                col_index=i/rows
                 row_index=i%rows
 
             elif self.ORIENTATION == Orientation.HORIZONTAL:
                 col_index=i%cols
-                row_index=i/rows
+                row_index=i/cols
 
             child.pos = (
                     sum(col_widths.values()[0:col_index]) + self.spacing/2,
-                    sum(row_heights.values()[0:row_index])+ self.spacing/2
-                        )
+                    sum(row_heights.values()[0:row_index])+ self.spacing/2)
 
         self.height = sum(row_heights.values()) + self.spacing/2
         self.width  = sum(col_widths.values())  + self.spacing/2
@@ -248,21 +245,6 @@ class VLayout(GridLayout):
 ## strictly legacy support
 class Layout(GridLayout):
     def __init__(self, orientation=Orientation, spacing = 5, background = None, onRendered = None, **kwargs):
-        rows = cols = -1
-        if orientation == Orientation.VERTICAL:
-            cols = 1
-        elif orientation == Orientation.HORIZONTAL:
-            rows = 1
-        super(Layout,self).__init__(cols=cols,rows=rows,spacing=spacing,background=background,onRendered=onRendered,**kwargs)
-
-class TableLayout(GridLayout):
-    def __init__(self,
-            orientation=Orientation,
-            spacing = 5,
-            background = None,
-            onRendered = None,
-            tabular = True,
-            **kwargs):
         rows = cols = -1
         if orientation == Orientation.VERTICAL:
             cols = 1
