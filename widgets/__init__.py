@@ -1,14 +1,13 @@
 import math, os, widget_config
 import libavg
 
-from libavg import avg, widget as avg_widget
+from libavg import avg, geom, widget as avg_widget
 from libavg.widget import Orientation
 
-from widget      import BaseWidget
-from layout      import Layout, HLayout, VLayout, GridLayout
-from divnodeplus import DivNodePlus
-from bars        import ButtonBar, ToggleButtonBar
-from buttons     import Button, ToggleButton, buttonImg, ButtonBackground
+from layout     import Layout, HLayout, VLayout, GridLayout
+from widgetbase import WidgetBase
+from bars       import ButtonBar, ToggleButtonBar
+from buttons    import Button, ToggleButton, buttonImg, ButtonBackground
 
 def initSkin():
     pwdPath = os.path.dirname(os.path.realpath(__file__))
@@ -18,16 +17,16 @@ def initSkin():
 SKIN = initSkin()
 
 #[deprecated]
-def Separator(width = widget_config.ICON_SIZE, height = widget_config.ICON_SIZE/20,fillcolor = "808080"):
+def Separator(width = widget_config.ICON_SIZE, height = widget_config.ICON_SIZE / 20, fillcolor = "808080"):
     return avg.RectNode( size = (width, height),
             color = fillcolor, opacity = 0, fillcolor = fillcolor, fillopacity = 1)
 
 #[deprecated]
-def VSeparator(width = widget_config.ICON_SIZE/20, height = widget_config.ICON_SIZE,fillcolor = "808080"):
+def VSeparator(width = widget_config.ICON_SIZE/20, height = widget_config.ICON_SIZE, fillcolor = "808080"):
     return avg.RectNode( size = (width, height),
             color = fillcolor, opacity = 0, fillcolor = fillcolor, fillopacity = 1)
 
-def LayoutBackground(color, size= (0,0), opacity = 1):
+def LayoutBackground(color, size= (0, 0), opacity = 1):
     return libavg.geom.RoundedRect(
         size, 0, (0, 0),
         color       = color, opacity     = opacity,
@@ -35,7 +34,7 @@ def LayoutBackground(color, size= (0,0), opacity = 1):
 
 def Slider(onPressed = None, onChanged = None, size = 650, thumbPos = 0.5):
     slider          = avg_widget.Slider(skinObj = SKIN)
-    slider.size     = avg.Point2D(size,80)
+    slider.size     = avg.Point2D(size, 80)
     slider.thumbPos = thumbPos
 
     if onChanged:

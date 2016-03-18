@@ -5,9 +5,10 @@ from __future__ import print_function
 import os
 import libavg
 from libavg     import avg, app, player
+from libavg     import WordsNode
 
 import widgets
-from widgets import Layout, VLayout, HLayout, GridLayout, DivNodePlus, Orientation, Label
+from widgets import Layout, VLayout, HLayout, GridLayout, WidgetBase, Orientation, Label
 
 # BaseWidget
 #   fillParent
@@ -16,18 +17,23 @@ from widgets import Layout, VLayout, HLayout, GridLayout, DivNodePlus, Orientati
 #   snapToParentTop...
 
 def rect(color, text = None,size = (60,60)):
-    div  = DivNodePlus()
+    #div  = widgets.BaseWidget()
+    div  = widgets.WidgetBase()
     rect = libavg.RectNode( size = size, opacity = 0, fillopacity = 1, fillcolor = color)
     div.appendChild(rect)
 
-    if not text == None:
-        words = libavg.WordsNode(pos = (0,0), color="000000", text=text, fontsize = 45, alignment="left", parent = div)
+    if text:
+        WordsNode(pos      = (0, 0),
+                  color    = "000000",
+                  text     = text,
+                  fontsize = 45,
+                  parent   = div)
         return div
     else:
         return rect
 
 def demoGrid(cols=3):
-    div = DivNodePlus()
+    div = WidgetBase()
     grid = GridLayout(cols=cols,background = rect("aaaaaa"))
     grid.subscribe(grid.RENDERED, lambda stuff: print("grid.size: {0}".format(grid.size)))
 

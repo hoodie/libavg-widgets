@@ -6,13 +6,13 @@ import libavg
 from libavg     import avg, app, player, RectNode
 
 import widgets
-from widgets import VLayout, HLayout, Layout, GridLayout, DivNodePlus, Orientation
+from widgets import VLayout, HLayout, Layout, GridLayout, WidgetBase, Orientation
 from widgets import ButtonBar, ToggleButtonBar, VLayout, HLayout, Orientation
 from widgets import Label
 
 
 def rect(color, text = None,size = (60,60)):
-    div  = DivNodePlus()
+    div  = WidgetBase()
     rect = libavg.RectNode( size = size, opacity = 0, fillopacity = 1, fillcolor = color)
     div.appendChild(rect)
 

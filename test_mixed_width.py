@@ -6,10 +6,10 @@ import libavg
 from libavg     import avg, app, player
 
 import widgets
-from widgets import VLayout, HLayout, Layout, GridLayout, DivNodePlus, Orientation, Label
+from widgets import VLayout, HLayout, Layout, GridLayout, WidgetBase, Orientation, Label
 
 def rect(color, text = None,size = (60,60)):
-    div  = DivNodePlus()
+    div  = WidgetBase()
     rect = libavg.RectNode( size = size, opacity = 0, fillopacity = 1, fillcolor = color)
     div.appendChild(rect)
 
@@ -20,7 +20,7 @@ def rect(color, text = None,size = (60,60)):
         return rect
 
 def mixedWidthGrid(cols=3, orientation = Orientation.HORIZONTAL):
-    div = DivNodePlus()
+    div = WidgetBase()
     grid = GridLayout(cols=cols,background = rect("aaaaaa"), orientation = orientation)
     #grid.subscribe(grid.RENDERED, lambda stuff: print("grid.size: {0}".format(grid.size)))
 
@@ -43,7 +43,7 @@ def mixedWidthGrid(cols=3, orientation = Orientation.HORIZONTAL):
     return div
 
 def mixedWidthTab(cols=3, orientation = Orientation.HORIZONTAL):
-    div = DivNodePlus()
+    div = WidgetBase()
     grid = GridLayout(
             cols=cols,
             background = rect("aaaaaa"),
@@ -88,6 +88,9 @@ class MainDiv(app.MainDiv):
         mainlayout.appendChild(Label("tabular layout", color="FFFFFF"))
         mainlayout.appendChild( tab_vert )
         mainlayout.appendChild( tab_hori )
+
+        mainlayout.appendChild(Label("control image", color="FFFFFF"))
+        mainlayout.appendChild( libavg.ImageNode(href="test_mixed_width.png") )
 
 
 app.App().run(MainDiv(), app_resolution="1000x700")

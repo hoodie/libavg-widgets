@@ -22,13 +22,11 @@
 
 
 import math, libavg
+from libavg import DivNode, Point2D
 from libavg.widget import Orientation
-from widget import BaseWidget
+from widgetbase import WidgetBase
 
-# TODO Layout: border
-# TODO Layout: don't keep extra list of objects but give them attributes (child.isMinion)
-
-class GridLayout(BaseWidget):
+class GridLayout(WidgetBase):
     RENDERED = libavg.Publisher.genMessageID()
 
     def __init__(self,
@@ -40,7 +38,7 @@ class GridLayout(BaseWidget):
                  background = None,
                  onRendered = None,
                  **kwargs):
-        super(GridLayout, self).__init__(**kwargs)
+        super(GridLayout, self).__init__(propagate_size_changed = False,**kwargs)
 
         self.ORIENTATION = orientation
         self.TABULAR = tabular
@@ -243,3 +241,4 @@ class Layout(GridLayout):
                                      background=background,
                                      onRendered=onRendered,
                                      **kwargs)
+

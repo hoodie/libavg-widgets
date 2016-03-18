@@ -1,15 +1,19 @@
-import libavg
-from libavg import Point2D, DivNode
+from libavg import Point2D, DivNode, WordsNode
 
 
-class DivNodePlus(DivNode):
+class WidgetBase(DivNode):
 
-    def __init__(self, parent = None, *args, **kwargs):
-        super(DivNodePlus, self).__init__(crop = True, *args, **kwargs)
+    def __init__(self,
+                 parent = None,
+                 propagate_size_changed = True,
+                 *args, **kwargs):
+
+        super(WidgetBase, self).__init__(crop = True, *args, **kwargs)
+
         self.registerInstance(self, parent)
         self.old_size = self.size
-        self.subscribe(self.SIZE_CHANGED, self.resizeChildren)
-        self.tell_resizeChildren = False
+        if propagate_size_changed:
+            self.subscribe(self.SIZE_CHANGED, self.resizeChildren)
 
     # children need to be handled nicer, don't you agree?
     @property
@@ -23,8 +27,6 @@ class DivNodePlus(DivNode):
     def resizeChildren(self, new_size):
         if self.old_size.x == 0:
             self.old_size = self.size
-            #print "     DivNodePlus::resizeChildren() did not work -> {0}".format(self.old_size)
-            #return
 
         try:
             ratio = new_size.x/self.old_size.x
@@ -34,24 +36,20 @@ class DivNodePlus(DivNode):
         if ratio == 1:
             return False
 
-        if self.tell_resizeChildren:
-            print "--> resizing children"
-        for i in xrange(self.getNumChildren()):
-            child = self.getChild(i)
-            #print "     DivNodePlus::resizeChildren() resizing by {0}".format(ratio)
+        for child in self.children:
+            #print "     WidgetBase::resizeChildren() resizing by {0}".format(ratio)
             child.size = child.size * ratio
             child.pos  = child.pos  * ratio
-            if child.__class__ == libavg.WordsNode:
+            if child.__class__ == WordsNode:
                 try:
                     child.fontsize = child.fontsize * ratio
                 except RuntimeError:
-                    print "fontsize remained unchanged"
+                    print("fontsize remained unchanged")
 
         self.old_size = self.size
         return True
 
     def resize(self, new_size):
-        old_size  = self.size
         self.size = new_size
         self.resizeChildren(self.size)
 
@@ -61,7 +59,7 @@ class DivNodePlus(DivNode):
 
     # make sure size reflects the content of the div, right after every appendChild
     def getMediaSize(self):
-        size = libavg.Point2D()
+        size = Point2D()
         for child in self.children:
             size.x = max( size.x, child.pos.x + child.size.x )
             size.y = max( size.y, child.pos.y + child.size.y )
@@ -70,15 +68,30 @@ class DivNodePlus(DivNode):
     # reset the size, according to content
     def appendChild(self, node):
         #print "appending Child"
-        super(DivNodePlus, self).appendChild(node)
+        super(WidgetBase, self).appendChild(node)
         if self.getMediaSize().x > 0 and self.getMediaSize().y > 0:
             self.old_size = self.size = self.getMediaSize()
 
 
     def fillParent(self, size = None):
         # takes size only for SIZE_CHANGED callback
-        self.size = self.parent.size
-        self.pos = Point2D(0, 0)
+        #self.DYNAMIC_SIZE = False
+        self.fillParentV()
+        self.fillParentH()
+
+    def fillParentV(self, size = None):
+        #self.DYNAMIC_SIZE = False
+        self.y = 0
+        self.height = self.parent.height
+        if self.background:
+            self.background.size = self.background.size.x, self.parent.height
+
+    def fillParentH(self, size = None):
+        #self.DYNAMIC_SIZE = False
+        self.x = 0
+        self.width = self.parent.width
+        if self.background:
+            self.background.size = self.parent.width, self.background.size.y
 
     def snapToBottom(self, other = None):
         if other is None:

@@ -7,7 +7,7 @@ import libavg
 from libavg     import avg, app, player, RectNode
 
 import widgets
-from widgets import VLayout, HLayout, Layout, GridLayout, DivNodePlus, Orientation
+from widgets import VLayout, HLayout, Layout, GridLayout, WidgetBase, Orientation
 from widgets import ButtonBar, ToggleButtonBar, VLayout, HLayout, Orientation
 from widgets import Label
 
@@ -18,7 +18,7 @@ class MainDiv(app.MainDiv):
         self.appendChild(mainlayout)
 
         grid = GridLayout(cols= 2, tabular=True, orientation=Orientation.HORIZONTAL, spacing=5)
-.
+
         slider1 = libavg.widget.Slider(range=(0,100), width=500, thumbPos=60)
         slider2 = libavg.widget.Slider(range=(0,100), width=500)
         slider1.subscribe(slider1.THUMB_POS_CHANGED, slider2.setThumbPos)
