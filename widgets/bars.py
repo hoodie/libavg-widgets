@@ -22,12 +22,12 @@
 
 import libavg
 
-from libavg import DivNode, Point2D
 from layout import Layout
 
 class ButtonBar(Layout):
     CLICKED = libavg.Publisher.genMessageID()
     PRESSED = libavg.Publisher.genMessageID()
+
     def __init__(self, buttons, spacing = 4, **kwargs):
         super(ButtonBar, self).__init__(**kwargs)
 
@@ -60,8 +60,9 @@ class ToggleButtonBar(Layout):
         self.appendChildren(self.buttons)
 
         for button in buttons:
-            button.subscribe(button.TOGGLED, lambda checked, button=button:
-                self.__onToggled(button))
+            button.subscribe(button.TOGGLED,
+                             lambda checked,
+                             button=button: self.__onToggled(button))
 
     #def index(self, tag):
     #    return [btn.tag == tag for btn in self.buttons].index(True)
@@ -80,7 +81,7 @@ class ToggleButtonBar(Layout):
 
     def toggle(self, index, checked = True):
         button = self.buttons[index]
-        self.toggle_silently(index,checked = True)
+        self.toggle_silently(index, checked = True)
         self.__onToggled(button)
 
     def untoggle(self):

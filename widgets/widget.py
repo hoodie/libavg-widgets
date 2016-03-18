@@ -21,16 +21,15 @@
 # Original author of this file is Hendrik Sollich
 
 
-import libavg
-from libavg      import DivNode, Point2D
+from libavg import DivNode, Point2D
 
 class BaseWidget(DivNode):
     def __init__(self, background = None, **kwargs):
         super(BaseWidget, self).__init__(**kwargs)
-        self.old_size = Point2D(0,0)
+        self.old_size = Point2D(0, 0)
 
         self.background = background
-        if background != None:
+        if background:
             self.__appendChild(background)
 
         #self.DYNAMIC_SIZE = True
@@ -70,22 +69,22 @@ class BaseWidget(DivNode):
         #print "scaling", ratio
         self.resize(self.size * ratio)
 
-    def fillParent(self,size = None):
+    def fillParent(self, size = None):
         # takes size only for SIZE_CHANGED callback
         #self.DYNAMIC_SIZE = False
         self.fillParentV()
         self.fillParentH()
 
-    def fillParentV(self,size = None):
+    def fillParentV(self, size = None):
         #self.DYNAMIC_SIZE = False
         self.y = 0
         self.height = self.parent.height
-        if self.background != None:
+        if self.background:
             self.background.size = self.background.size.x, self.parent.height
 
-    def fillParentH(self,size = None):
+    def fillParentH(self, size = None):
         #self.DYNAMIC_SIZE = False
         self.x = 0
         self.width = self.parent.width
-        if self.background != None:
+        if self.background:
             self.background.size = self.parent.width, self.background.size.y

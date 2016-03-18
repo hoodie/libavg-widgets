@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import libavg
 from libavg     import avg, app, player, RectNode
@@ -17,21 +18,30 @@ class MainDiv(app.MainDiv):
         self.appendChild(mainlayout)
 
         grid = GridLayout(cols= 2, tabular=True, orientation=Orientation.HORIZONTAL, spacing=5)
+.
+        slider1 = libavg.widget.Slider(range=(0,100), width=500, thumbPos=60)
+        slider2 = libavg.widget.Slider(range=(0,100), width=500)
+        slider1.subscribe(slider1.THUMB_POS_CHANGED, slider2.setThumbPos)
 
-        grid.appendChild(Label("foo"    ,color="0000FF"))
-        grid.appendChild(Label("bar"    ,color="0000FF"))
-        grid.appendChild(Label("cafe"   ,color="FF00FF"))
-        grid.appendChild(Label("babe"   ,color="FF00FF"))
-        grid.appendChild(Label("hendrik",color="FF0000"))
-        grid.appendChild(Label("sollich",color="FF0000"))
+        grid.appendChild(Label("Slider", color="FFFFFF")); grid.appendChild(slider1)
+
+        grid.appendChild(Label("linked Slider", color="FFFFFF")); grid.appendChild(slider2)
+
+        grid.appendChild(Label("cafe", color="FFFFFF"))
+        grid.appendChild(libavg.widget.ProgressBar(orientation=libavg.widget.Orientation.VERTICAL,
+                                                   range=(0,100),
+                                                   width=500,
+                                                   value=30))
+
+        grid.appendChild(Label("hendrik",color="FFFFFF"))
+        grid.appendChild(Label("sollich",color="FFFFFF"))
 
         mainlayout.appendChild(grid)
 
         self.buildToolbars()
 
     def buildToolbars(self):
-        toolbarBG = RectNode(fillcolor="ff0000", opacity=0, fillopacity=1)
-        buttonbBG = lambda: RectNode(fillcolor="0000FF", opacity=0, fillopacity=1)
+        toolbarBG = RectNode(fillcolor="333333", opacity=0, fillopacity=1)
 
         # main toolbar
         self.toolBar    = HLayout(spacing = 0, background=toolbarBG)
@@ -44,7 +54,7 @@ class MainDiv(app.MainDiv):
                 ],
                 orientation = libavg.widget.Orientation.HORIZONTAL,
                 spacing = 1,
-                background = RectNode(fillcolor="0000FF", opacity=0, fillopacity=1)
+                background = RectNode(fillcolor="444444", opacity=0, fillopacity=1)
                 )
 
         # some mutually exclusive toggle buttons
@@ -55,7 +65,7 @@ class MainDiv(app.MainDiv):
                 ],
                 orientation = libavg.widget.Orientation.HORIZONTAL,
                 spacing = 1,
-                background = RectNode(fillcolor="0000FF", opacity=0, fillopacity=1)
+                background = RectNode(fillcolor="444444", opacity=0, fillopacity=1)
                 )
 
         # putting it all together
@@ -73,37 +83,21 @@ class MainDiv(app.MainDiv):
         self.naviBar.subscribe( ButtonBar.CLICKED, self.__handle_navbar)
         self.toggleBar.subscribe( ToggleButtonBar.TOGGLED, self.__handle_toggle)
 
+
+
+
+
     def __handle_toggle(self, tag):
         try:
             getattr(self, "handle_"+tag)()
         except AttributeError as details:
-            print "AttributeError: Tag names non existent handler: \"", tag, "\"(" ,details, ")"
+            print( "AttributeError: Tag names non existent handler: \"", tag, "\"(" ,details, ")")
 
     def __handle_navbar(self, tag):
         try:
             getattr(self, "handle_"+tag)()
         except AttributeError as details:
-            print "AttributeError: Tag names non existent handler: \"", tag, "\"(" ,details, ")"
-
-    def onStartup(self):
-        print "onStartup"
-
-    def onExit(self):
-        pass
-
-    def onFrame(self): # TODO https://www.libavg.de/site/projects/libavg/wiki/App sais onFrame(self,delta)
-        pass
-
-    def onArgvParserCreated(self, parser):
-        parser.add_option('--speed', '-s', default='0.3', dest='speed',
-                help='Pixels per second')
-        parser.add_option('--color', '-c', default='ff0000', dest='color',
-                help='Fill color of the running block')
-
-    # This method is called when the command line options are being parsed.
-    # options, args are the result of OptionParser.parse_args().
-    def onArgvParsed(self, options, args, parser):
-        self.argvoptions = options
+            print( "AttributeError: Tag names non existent handler: \"", tag, "\"(" ,details, ")")
 
 
 app.App().run(MainDiv(), app_resolution="800x600")

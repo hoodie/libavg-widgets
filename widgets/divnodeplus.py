@@ -5,13 +5,13 @@ from libavg import Point2D, DivNode
 class DivNodePlus(DivNode):
 
     def __init__(self, parent = None, *args, **kwargs):
-        super(DivNodePlus,self).__init__(crop = True, *args, **kwargs)
+        super(DivNodePlus, self).__init__(crop = True, *args, **kwargs)
         self.registerInstance(self, parent)
         self.old_size = self.size
         self.subscribe(self.SIZE_CHANGED, self.resizeChildren)
         self.tell_resizeChildren = False
 
-    ## children need to be handled nicer, don't you agree?
+    # children need to be handled nicer, don't you agree?
     @property
     def children(self):
         return [self.getChild(i) for i in xrange(self.getNumChildren())]
@@ -59,7 +59,7 @@ class DivNodePlus(DivNode):
         self.resize(self.size * ratio)
 
 
-    ## make sure size reflects the content of the div, right after every appendChild
+    # make sure size reflects the content of the div, right after every appendChild
     def getMediaSize(self):
         size = libavg.Point2D()
         for child in self.children:
@@ -67,7 +67,7 @@ class DivNodePlus(DivNode):
             size.y = max( size.y, child.pos.y + child.size.y )
         return size
 
-    ## reset the size, according to content
+    # reset the size, according to content
     def appendChild(self, node):
         #print "appending Child"
         super(DivNodePlus, self).appendChild(node)
@@ -78,9 +78,9 @@ class DivNodePlus(DivNode):
     def fillParent(self, size = None):
         # takes size only for SIZE_CHANGED callback
         self.size = self.parent.size
-        self.pos = Point2D(0,0)
+        self.pos = Point2D(0, 0)
 
     def snapToBottom(self, other = None):
-        if other == None:
+        if other is None:
             other = self.parent
         self.y = other.y+other.height - self.height

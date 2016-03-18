@@ -21,29 +21,25 @@
 # Original author of this file is Hendrik Sollich
 
 
-import math
-import libavg
+import math, libavg
+from libavg.widget import Orientation
 from widget import BaseWidget
-from libavg import DivNode
 
-#TODO Layout: border
-#TODO Layout: don't keep extra list of objects but give them attributes (child.isMinion)
-class Orientation:
-    VERTICAL     = 0
-    HORIZONTAL   = 1
+# TODO Layout: border
+# TODO Layout: don't keep extra list of objects but give them attributes (child.isMinion)
 
 class GridLayout(BaseWidget):
     RENDERED = libavg.Publisher.genMessageID()
 
     def __init__(self,
-            cols = -1,
-            rows = -1,
-            spacing = 5,
-            orientation = Orientation.HORIZONTAL,
-            tabular = False,
-            background = None,
-            onRendered = None,
-            **kwargs):
+                 cols = -1,
+                 rows = -1,
+                 spacing = 5,
+                 orientation = Orientation.HORIZONTAL,
+                 tabular = False,
+                 background = None,
+                 onRendered = None,
+                 **kwargs):
         super(GridLayout, self).__init__(**kwargs)
 
         self.ORIENTATION = orientation
@@ -59,12 +55,12 @@ class GridLayout(BaseWidget):
         self.spacing = float(spacing)
 
         self.background = background
-        if background != None:
+        if background:
             self.__appendChild(background)
 
-        self.__layoutedChildren = [] # not children because children include the background as well
+        self.__layoutedChildren = []  # not children because children include the background as well
 
-        if onRendered != None:
+        if onRendered:
             self.subscribe(self.RENDERED, onRendered)
 
     def __appendChild(self, child):
@@ -85,7 +81,7 @@ class GridLayout(BaseWidget):
         self.render()
 
     def render(self):
-        if self.TABULAR == True:
+        if self.TABULAR:
             self.render_tabular()
         else:
             if self.ORIENTATION == Orientation.HORIZONTAL:
@@ -99,30 +95,28 @@ class GridLayout(BaseWidget):
         row_heights = {}
 
         if self.cols > 0:
-            rows = int(math.ceil( float(len(self.__layoutedChildren)) / self.cols ))
             cols = self.cols
         elif self.rows > 0:
             cols = int(math.ceil( float(len(self.__layoutedChildren)) / self.rows ))
-            rows = self.rows
 
 
         for i, child in enumerate(m for m in self.__layoutedChildren if m.active):
-            if i%cols == 0:
-                pos.x  = self.spacing/2
-                pos.y += self.spacing/2 + row_height
-                col_width = row_height = self.spacing/2
+            if i % cols == 0:
+                pos.x  = self.spacing / 2
+                pos.y += self.spacing / 2 + row_height
+                col_width = row_height = self.spacing / 2
 
             child.pos = (pos.x, pos.y)
-            pos.x += child.size.x + self.spacing/2
-            col_width  += child.size.x + self.spacing/2
+            pos.x += child.size.x + self.spacing / 2
+            col_width += child.size.x + self.spacing / 2
             row_height = max(row_height, child.size.y)
-            row_heights[i/cols] = row_height + self.spacing/2
+            row_heights[i / cols] = row_height + self.spacing / 2
 
             #TODO too small, not right
             self.width  = max(self.width, col_width)
-        self.height = sum(row_heights.values()) + self.spacing/2
-        self.old_size = self.size # used by scale
-        if self.background != None:
+        self.height = sum(row_heights.values()) + self.spacing / 2
+        self.old_size = self.size  # used by scale
+        if self.background:
             self.background.size = self.size
 
         self.notifySubscribers(self.RENDERED, [self])
@@ -133,15 +127,12 @@ class GridLayout(BaseWidget):
         col_widths = {}
 
         if self.rows > 0:
-            cols = int(math.ceil( float(len(self.__layoutedChildren)) / self.rows ))
             rows = self.rows
         elif self.cols > 0:
             rows = int(math.ceil( float(len(self.__layoutedChildren)) / self.cols ))
-            cols = self.cols
-
 
         for i, child in enumerate(m for m in self.__layoutedChildren if m.active):
-            if i%rows == 0:
+            if i % rows == 0:
                 pos.y  = self.spacing/2
                 pos.x += self.spacing/2 + col_width
                 row_height = col_width = self.spacing/2
@@ -155,16 +146,13 @@ class GridLayout(BaseWidget):
             #TODO too small, not right
             self.height  = max(self.height, row_height)
         self.width = sum(col_widths.values()) + self.spacing/2
-        self.old_size = self.size # used bx scale
-        if self.background != None:
+        self.old_size = self.size  # used bx scale
+        if self.background:
             self.background.size = self.size
 
         self.notifySubscribers(self.RENDERED, [self])
 
-    def render_tabular(self): # quasi horizontal
-        pos = libavg.Point2D(0, 0)
-        row_height = col_width = 0
-
+    def render_tabular(self):  # quasi horizontal
         col_widths  = {}
         row_heights = {}
 
@@ -181,12 +169,12 @@ class GridLayout(BaseWidget):
         for i, child in enumerate(m for m in self.__layoutedChildren if m.active):
 
             if self.ORIENTATION == Orientation.VERTICAL:
-                col_index=i/rows
-                row_index=i%rows
+                col_index = i / rows
+                row_index = i % rows
 
             elif self.ORIENTATION == Orientation.HORIZONTAL:
-                col_index=i%cols
-                row_index=i/cols
+                col_index = i % cols
+                row_index = i / cols
 
 
             width  = max(col_widths .get(col_index, -1),  child.width + self.spacing/2)
@@ -195,28 +183,27 @@ class GridLayout(BaseWidget):
             col_widths[col_index]  = width
             row_heights[row_index] = height
 
-        col_widths[-1] = 0 # hack for the [-1] case
-        row_heights[-1] = 0 # hack for the [-1] case
+        col_widths[-1]  = 0  # hack for the [-1] case
+        row_heights[-1] = 0  # hack for the [-1] case
 
         # positioning run
         for i, child in enumerate(m for m in self.__layoutedChildren if m.active):
 
             if self.ORIENTATION == Orientation.VERTICAL:
-                col_index=i/rows
-                row_index=i%rows
+                col_index = i / rows
+                row_index = i % rows
 
             elif self.ORIENTATION == Orientation.HORIZONTAL:
-                col_index=i%cols
-                row_index=i/cols
+                col_index = i % cols
+                row_index = i / cols
 
-            child.pos = (
-                    sum(col_widths.values()[0:col_index]) + self.spacing/2,
-                    sum(row_heights.values()[0:row_index])+ self.spacing/2)
+            child.pos = (sum( col_widths.values()[0:col_index]) + self.spacing/2,
+                         sum(row_heights.values()[0:row_index]) + self.spacing/2)
 
         self.height = sum(row_heights.values()) + self.spacing/2
         self.width  = sum(col_widths.values())  + self.spacing/2
-        self.old_size = self.size # used by scale
-        if self.background != None:
+        self.old_size = self.size  # used by scale
+        if self.background:
             self.background.size = self.size
 
         self.notifySubscribers(self.RENDERED, [self])
@@ -236,13 +223,13 @@ class GridLayout(BaseWidget):
 
 class HLayout(GridLayout):
     def __init__(self, **kwargs):
-        super(HLayout, self).__init__(rows = 1,**kwargs)
+        super(HLayout, self).__init__(rows = 1, **kwargs)
 
 class VLayout(GridLayout):
     def __init__(self, **kwargs):
         super(VLayout, self).__init__(cols = 1, **kwargs)
 
-## strictly legacy support
+# strictly legacy support
 class Layout(GridLayout):
     def __init__(self, orientation=Orientation, spacing = 5, background = None, onRendered = None, **kwargs):
         rows = cols = -1
@@ -250,4 +237,9 @@ class Layout(GridLayout):
             cols = 1
         elif orientation == Orientation.HORIZONTAL:
             rows = 1
-        super(Layout,self).__init__(cols=cols,rows=rows,spacing=spacing,background=background,onRendered=onRendered,**kwargs)
+        super(Layout, self).__init__(cols=cols,
+                                     rows=rows,
+                                     spacing=spacing,
+                                     background=background,
+                                     onRendered=onRendered,
+                                     **kwargs)
