@@ -11,6 +11,7 @@ from widgets import VLayout, HLayout, Layout, GridLayout, WidgetBase, Orientatio
 from widgets import ButtonBar, ToggleButtonBar, VLayout, HLayout, Orientation
 from widgets import Label
 from widgets import StepSlider
+from widgets import SwitchSlider
 
 class MainDiv(app.MainDiv):
 
@@ -48,16 +49,13 @@ class MainDiv(app.MainDiv):
 
 
         # Vertical StepSlider
-        grid.appendChild(Label("stepslider2",color="FFFFFF"))
-        step_slider = StepSlider(
-                    range=(0,100),
-                    orientation= Orientation.VERTICAL,
-                    height=200,
-                    steps=[0,20,25,50,80, 100])
-        step_slider.subscribe(StepSlider.RELEASED, lambda: print("released at ", step_slider.thumbPos))
-        step_slider.subscribe(StepSlider.STEPPED, lambda: print("jumped to ", step_slider.thumbPos))
-        step_slider.subscribe(StepSlider.THUMB_POS_CHANGED, lambda _pos: print("changed to ", step_slider.thumbPos))
-        grid.appendChild( step_slider )
+        switch_slider = SwitchSlider(
+                initSize=80,
+                colors=[ "ff0000", "222222", "bbbbbb" ]
+                #,orientation = Orientation.VERTICAL
+                )
+        grid.appendChild(Label("switch slider",color="FFFFFF"))
+        grid.appendChild( switch_slider )
 
         mainlayout.appendChild(grid)
 

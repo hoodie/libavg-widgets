@@ -39,6 +39,7 @@ class StepSlider(avg_widget.Slider):
         self.slider_width = kwargs['width'] if "width" in kwargs else 0
         self.slider_height= kwargs['height'] if "height" in kwargs else 0
 
+        print(skinObj.defaultSliderCfg['vertical'])
         super(StepSlider, self).__init__(orientation, skinObj, **kwargs)
         self.registerInstance(self, parent)
         self.publish(StepSlider.STEPPED)
