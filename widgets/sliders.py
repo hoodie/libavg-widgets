@@ -16,10 +16,11 @@ def Slider(onPressed = None, onChanged = None, size = 650, thumbPos = 0.5):
     return slider
 
 
+# YOU ARE NOT MY REAL SLIDER!!!
 class StepSlider(avg_widget.Slider):
     """A Slider that allows only switching between concrete steps"""
 
-    JUMPED = avg.Publisher.genMessageID()
+    STEPPED = avg.Publisher.genMessageID()
 
     def __init__(self,
             orientation=avg_widget.Orientation.HORIZONTAL,
@@ -33,12 +34,14 @@ class StepSlider(avg_widget.Slider):
             cfg = skinObj.defaultSliderCfg["vertical"]
 
         self.steps = steps
+        self.slider_orientation = orientation
         self.slider_range = kwargs['range']
-        self.slider_width = kwargs['width']
+        self.slider_width = kwargs['width'] if "width" in kwargs else 0
+        self.slider_height= kwargs['height'] if "height" in kwargs else 0
 
         super(StepSlider, self).__init__(orientation, skinObj, **kwargs)
         self.registerInstance(self, parent)
-        self.publish(StepSlider.JUMPED)
+        self.publish(StepSlider.STEPPED)
 
         self.thumbPos = steps[0]
         self.subscribe(avg_widget.Slider.RELEASED, self._jumpToStep)
@@ -52,11 +55,21 @@ class StepSlider(avg_widget.Slider):
         draws markers at indicating possible steps
         takes place before parent init
         """
-
         color = "FFFFFF"
-        marker_size = 5.,15.
+
         for step in self.steps:
             marker = DivNode()
+            if self.slider_orientation == avg_widget.Orientation.HORIZONTAL:
+                marker_pos=( (self.slider_width / self.slider_range[1])*step-marker.width, 0 )
+                marker_size = 5.,15.
+                label_pos = (marker_size[0]/2,marker_size[1]+3)
+                label_alignment="center"
+            else:
+                marker_pos=( 0 , (self.slider_height/ self.slider_range[1])*step-marker.height)
+                marker_size = 15.,5.
+                label_pos = (marker_size[0]+10,marker_size[1]/2)
+                label_alignment="left"
+
             geom.RoundedRect(
                     size=marker_size,
                     radius=2,
@@ -66,16 +79,14 @@ class StepSlider(avg_widget.Slider):
                     parent = marker)
 
             WordsNode(
-                    pos = (marker_size[0]/2,marker_size[1]+3),
+                    pos = label_pos,
                     text=str(step),
                     color=color,
                     fontsize=10,
-                    alignment="center",
+                    alignment=label_alignment,
                     parent = marker)
 
-            marker.pos=(
-                    (self.slider_width / self.slider_range[1])*step-marker.width,
-                    0)
+            marker.pos = marker_pos
 
             self.appendChild(marker)
 
@@ -92,6 +103,5 @@ class StepSlider(avg_widget.Slider):
                 min_dist_index = index
 
         self.setThumbPos(self.steps[min_dist_index])
-        # TODO use own Message: JUMPED
         self.notifySubscribers(super(StepSlider, self).THUMB_POS_CHANGED, [self.thumbPos])
-        self.notifySubscribers(self.JUMPED, [])
+        self.notifySubscribers(self.STEPPED, [])

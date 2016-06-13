@@ -40,11 +40,23 @@ class MainDiv(app.MainDiv):
         step_slider = StepSlider(
                     range=(0,100),
                     width=500,
-                    steps=[20,25,50,80])
+                    steps=[0,20,25,50,80, 100])
         step_slider.subscribe(StepSlider.RELEASED, lambda: print("released at ", step_slider.thumbPos))
-        step_slider.subscribe(StepSlider.JUMPED, lambda: print("jumped to ", step_slider.thumbPos))
+        step_slider.subscribe(StepSlider.STEPPED, lambda: print("jumped to ", step_slider.thumbPos))
         step_slider.subscribe(StepSlider.THUMB_POS_CHANGED, lambda _pos: print("changed to ", step_slider.thumbPos))
+        grid.appendChild( step_slider )
 
+
+        # Vertical StepSlider
+        grid.appendChild(Label("stepslider2",color="FFFFFF"))
+        step_slider = StepSlider(
+                    range=(0,100),
+                    orientation= Orientation.VERTICAL,
+                    height=200,
+                    steps=[0,20,25,50,80, 100])
+        step_slider.subscribe(StepSlider.RELEASED, lambda: print("released at ", step_slider.thumbPos))
+        step_slider.subscribe(StepSlider.STEPPED, lambda: print("jumped to ", step_slider.thumbPos))
+        step_slider.subscribe(StepSlider.THUMB_POS_CHANGED, lambda _pos: print("changed to ", step_slider.thumbPos))
         grid.appendChild( step_slider )
 
         mainlayout.appendChild(grid)
