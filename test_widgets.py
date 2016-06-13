@@ -10,6 +10,7 @@ import widgets
 from widgets import VLayout, HLayout, Layout, GridLayout, WidgetBase, Orientation
 from widgets import ButtonBar, ToggleButtonBar, VLayout, HLayout, Orientation
 from widgets import Label
+from widgets import StepSlider
 
 class MainDiv(app.MainDiv):
 
@@ -24,7 +25,6 @@ class MainDiv(app.MainDiv):
         slider1.subscribe(slider1.THUMB_POS_CHANGED, slider2.setThumbPos)
 
         grid.appendChild(Label("Slider", color="FFFFFF")); grid.appendChild(slider1)
-
         grid.appendChild(Label("linked Slider", color="FFFFFF")); grid.appendChild(slider2)
 
         grid.appendChild(Label("cafe", color="FFFFFF"))
@@ -35,6 +35,17 @@ class MainDiv(app.MainDiv):
 
         grid.appendChild(Label("hendrik",color="FFFFFF"))
         grid.appendChild(Label("sollich",color="FFFFFF"))
+
+        grid.appendChild(Label("stepslider",color="FFFFFF"))
+        step_slider = StepSlider(
+                    range=(0,100),
+                    width=500,
+                    steps=[20,25,50,80])
+        step_slider.subscribe(StepSlider.RELEASED, lambda: print("released at ", step_slider.thumbPos))
+        step_slider.subscribe(StepSlider.JUMPED, lambda: print("jumped to ", step_slider.thumbPos))
+        step_slider.subscribe(StepSlider.THUMB_POS_CHANGED, lambda _pos: print("changed to ", step_slider.thumbPos))
+
+        grid.appendChild( step_slider )
 
         mainlayout.appendChild(grid)
 

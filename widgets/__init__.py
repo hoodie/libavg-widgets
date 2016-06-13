@@ -4,15 +4,12 @@ import libavg
 from libavg import avg, geom, widget as avg_widget
 from libavg.widget import Orientation
 
+from skin       import initSkin
 from layout     import Layout, HLayout, VLayout, GridLayout
 from widgetbase import WidgetBase
 from bars       import ButtonBar, ToggleButtonBar
 from buttons    import Button, ToggleButton, buttonImg, ButtonBackground
-
-def initSkin():
-    pwdPath = os.path.dirname(os.path.realpath(__file__))
-    mediaPath = os.path.join(pwdPath, "skin")
-    return avg_widget.Skin("CustomSkin.xml", mediaPath)
+from sliders    import Slider, StepSlider
 
 SKIN = initSkin()
 
@@ -31,17 +28,6 @@ def LayoutBackground(color, size= (0, 0), opacity = 1):
         size, 0, (0, 0),
         color       = color, opacity     = opacity,
         fillcolor   = color, fillopacity = opacity)
-
-def Slider(onPressed = None, onChanged = None, size = 650, thumbPos = 0.5):
-    slider          = avg_widget.Slider(skinObj = SKIN)
-    slider.size     = avg.Point2D(size, 80)
-    slider.thumbPos = thumbPos
-
-    if onChanged:
-        slider.subscribe(avg_widget.Slider.THUMB_POS_CHANGED, onChanged)
-    if onPressed:
-        slider.subscribe(avg_widget.Slider.PRESSED, onPressed)
-    return slider
 
 #[deprecated]
 def Label(string, color="000000", size=20):
