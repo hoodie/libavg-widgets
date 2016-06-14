@@ -5,6 +5,7 @@ class WidgetBase(DivNode):
 
     def __init__(self,
                  parent = None,
+                 background = None,
                  propagate_size_changed = True,
                  *args, **kwargs):
 
@@ -12,6 +13,7 @@ class WidgetBase(DivNode):
 
         self.registerInstance(self, parent)
         self.old_size = self.size
+        self.background = background
         if propagate_size_changed:
             self.subscribe(self.SIZE_CHANGED, self.resizeChildren)
 

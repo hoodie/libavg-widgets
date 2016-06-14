@@ -21,7 +21,6 @@ def rect(color, text = None,size = (60,60)):
     div  = widgets.WidgetBase()
     rect = libavg.RectNode( size = size, opacity = 0, fillopacity = 1, fillcolor = color)
     div.appendChild(rect)
-
     if text:
         WordsNode(pos      = (0, 0),
                   color    = "000000",

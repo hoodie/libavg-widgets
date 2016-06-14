@@ -119,6 +119,7 @@ class SwitchSlider(_SimpleSlider):
             orientation=Orientation.HORIZONTAL,
             reverse=False,
             friction=-1,
+            step = 0,
             parent=None,
             **kwargs):
         super(SwitchSlider, self).__init__(initSize=initSize, colors=colors, orientation=orientation, parent=parent, **kwargs)
@@ -128,7 +129,7 @@ class SwitchSlider(_SimpleSlider):
         self.minStretch = 1*initSize
         self.maxStretch = self._expand
         self.steps      = 3
-        self.step       = 0
+        self.step       = step
         self.stepSize   = (self.maxStretch-self.minStretch)/(self.steps-1)
 
         # temp values
@@ -163,6 +164,9 @@ class SwitchSlider(_SimpleSlider):
             self.pos = (self._pos.x,self._pos.y + self._expand -self._size.y)
         else:
             self.pos = (self._pos.x + self._expand -self._size.x,self._pos.y)
+
+        # set initial state
+        self.setSwitchStep(self.step)
 
     ## Get switch state.
     # @param self object pointer

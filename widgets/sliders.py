@@ -82,7 +82,7 @@ class StepSlider(avg_widget.Slider):
         marker.tapRecognizer = gesture.TapRecognizer(
                 node            = marker,
                 #maxTime         = MAX_TAP_TIME,
-                maxDist         = 10,
+                maxDist         = 20,
                 initialEvent    = None,
                 possibleHandler = None,
                 failHandler     = None,
