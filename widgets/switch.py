@@ -16,8 +16,7 @@ class _SimpleSlider(avg.DivNode):
             reverse_node=False, parent=None, **kwargs):
         super(_SimpleSlider, self).__init__(size=(initSize,initSize), **kwargs)
 
-        if parent:
-            parent.appendChild(self)
+        self.registerInstance(self, parent)
 
         # initial parameters
         self._initSize 	= initSize
@@ -124,7 +123,7 @@ class SwitchSlider(_SimpleSlider):
             **kwargs):
         super(SwitchSlider, self).__init__(initSize=initSize, colors=colors, orientation=orientation, parent=parent, **kwargs)
 
-        self.publish(SwitchSlider.STATE_CHANGED)
+        self.publish(self.STATE_CHANGED)
 
         self.minStretch = 1*initSize
         self.maxStretch = self._expand
@@ -174,10 +173,12 @@ class SwitchSlider(_SimpleSlider):
     # @param self object pointer
     # @param newstate state to be set to
     def setSwitchStep(self, newstate):
+        print "trying to update switch"
         self.step = newstate
         self._setState(self.step)
+        self._size = avg.Point2D(self._size.x, self.minStretch + newstate*self.stepSize)
+        self.setSize(self._size)
         self.notifySubscribers(self.STATE_CHANGED, [self.step])
-        switchStep = property(getSwitchStep, setSwitchStep)
 
     ## Update state of switch.
     # @param self object pointer
