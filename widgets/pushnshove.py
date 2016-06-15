@@ -17,7 +17,7 @@ class PushNShove():
             resizeable        = False,
             keep_on_screen    = True, # not yet implemented
             window_decoration = True,
-            decoration_height = 25,
+            decoration_height = 35,
             tap_callback      = None,
             hold_callback     = None,
             zoom_in_callback  = None,
@@ -166,7 +166,8 @@ class PushNShove():
                 moveHandler     = transformMove,
                 upHandler       = transformUp,
                 endHandler      = transformEnd,
-                friction= 0.15)
+                friction= 0.01
+                )
 
     def focusNode(self, window):
         pass
@@ -182,6 +183,7 @@ class PushNShove():
 
     def __wrapNodeInWindow(self, node, decoration,decoration_height): #-> Window: DivNode
         window = DivNode()
+        window.crop = True
         if decoration:
             window.decoration = RectNode(
                     fillopacity=1,
@@ -216,8 +218,9 @@ class PushNShove():
             window.pos = (window.pos.x, self.size.y-window.size.y)
 
     def placeRandomlyOnScreen(self, window):
-        window.pos = (random.random() * (self.size.x - window.size.x),
-                random.random() * (self.size.y - window.size.y))
+        pos = ( max((random.random()+.5),1) * (self.size.x - window.size.x),
+                     random.random()        * (self.size.y - window.size.y))
+        window.pos = pos
         self.keepOnScreen(window)
 
     def activateBackground(self):
