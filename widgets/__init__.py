@@ -11,6 +11,7 @@ from bars       import ButtonBar, ToggleButtonBar
 from buttons    import Button, ToggleButton, buttonImg, ButtonBackground
 from sliders    import Slider, StepSlider
 from switch     import SwitchSlider
+from pushnshove import PushNShove
 
 SKIN = initSkin()
 
