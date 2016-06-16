@@ -184,16 +184,31 @@ class PushNShove():
     def __wrapNodeInWindow(self, node, decoration,decoration_height): #-> Window: DivNode
         window = DivNode()
         window.crop = True
+        border_width = 5
         if decoration:
-            window.decoration = RectNode(
-                    fillopacity=1,
+            window.border= RectNode(
+                    strokewidth = 5,
                     pos = (0,0),
+                    size =  (node.size[0]+2*border_width, node.size[1]+2*border_width+decoration_height),
+                    color="FFFFFF",
+                    opacity=1,
+                    fillcolor="FFFFFF",
+                    fillopacity=1,)
+
+            window.decoration = RectNode(
+                    fillopacity=.8,
+                    pos = (border_width,border_width),
                     size =  (node.size[0], decoration_height),
-                    fillcolor="44aadd")
-            window.size = (node.size[0],node.size[1]+decoration_height)
+                    fillcolor="2299bb")
+
+            window.size = (
+                    node.size[0]+2*border_width,
+                    node.size[1]+decoration_height+2*border_width)
+
+            window.appendChild(window.border)
             window.appendChild(node)
             window.appendChild(window.decoration)
-            node.pos=(0,decoration_height)
+            node.pos=(0+border_width,decoration_height+border_width)
         else:
             window.decoration = node
             window.size = node.size
@@ -218,8 +233,8 @@ class PushNShove():
             window.pos = (window.pos.x, self.size.y-window.size.y)
 
     def placeRandomlyOnScreen(self, window):
-        pos = ( max((random.random()+.5),1) * (self.size.x - window.size.x),
-                     random.random()        * (self.size.y - window.size.y))
+        pos = ( random.random() * (self.size.x - window.size.x),
+                random.random() * (self.size.y - window.size.y))
         window.pos = pos
         self.keepOnScreen(window)
 
