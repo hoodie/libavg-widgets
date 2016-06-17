@@ -11,7 +11,7 @@ from widgets import VLayout, HLayout, Layout, GridLayout, WidgetBase, Orientatio
 from widgets import ButtonBar, ToggleButtonBar, VLayout, HLayout, Orientation
 from widgets import Label
 from widgets import StepSlider
-from widgets import SwitchSlider
+from widgets import SnapSwitch
 
 class MainDiv(app.MainDiv):
 
@@ -49,7 +49,7 @@ class MainDiv(app.MainDiv):
 
 
         # Vertical StepSlider
-        switch_slider = SwitchSlider(
+        switch_slider = SnapSwitch(
                 initSize=80,
                 colors=[ "ff0000", "222222", "bbbbbb" ]
                 #,orientation = Orientation.VERTICAL

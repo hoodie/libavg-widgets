@@ -10,7 +10,7 @@ from widgetbase import WidgetBase
 from bars       import ButtonBar, ToggleButtonBar
 from buttons    import Button, ToggleButton, buttonImg, ButtonBackground
 from sliders    import Slider, StepSlider
-from switch     import SwitchSlider
+from snap       import SnapSwitch
 from pushnshove import PushNShove
 
 SKIN = initSkin()
