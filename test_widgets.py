@@ -51,8 +51,7 @@ class MainDiv(app.MainDiv):
         # Vertical StepSlider
         switch_slider = SnapSwitch(
                 initSize=80,
-                colors=[ "ff0000", "222222", "bbbbbb" ]
-                #,orientation = Orientation.VERTICAL
+                #orientation = Orientation.VERTICAL
                 )
         grid.appendChild(Label("switch slider",color="FFFFFF"))
         grid.appendChild( switch_slider )

@@ -5,15 +5,15 @@ from libavg import avg, gesture, geom
 from libavg.widget import Orientation
 from widgetbase import WidgetBase
 
-COLORS=[ "aaaaaa", "005555", "ffffff" ]
-
 class SnapSwitch(WidgetBase):
 
     STATE_CHANGED = avg.Publisher.genMessageID()
 
     def __init__(self,
             orientation=Orientation.HORIZONTAL,
-            colors = COLORS,
+            knob_color = "AAAAAA",
+            border_color = "FFFFFF",
+            background_color = "444444",
             initSize=100,
             **kwargs):
         super(SnapSwitch, self).__init__(propagate_size_changed = False,**kwargs)
@@ -26,53 +26,50 @@ class SnapSwitch(WidgetBase):
         self.__border_width = initSize/20
         self.__rect_radius  = initSize/2
         self.__friction     = -1
+        self.__knob_color       = knob_color
+        self.__border_color     = border_color
+        self.__background_color = background_color
 
-        self.__initGraphics(colors)
+        self.__initGraphics()
         self.__resetState()
 
 
 
-    def __initGraphics(self,colors=COLORS):
+    def __initGraphics(self):
         # set background of switch node
+        bw = self.__border_width
         if self.__orientation == Orientation.VERTICAL:
             self.__background = geom.RoundedRect(
                     size=(self.__initSize+2*self.__border_width, self.__expand+2*self.__border_width),
                     radius=self.__rect_radius,
                     fillopacity=1,
-                    fillcolor=colors[1],
-                    color="000000",
+                    fillcolor=self.__background_color,
+                    color=self.__border_color,
                     parent= self)
-            self.__background.pos = -self.__border_width,-self.__border_width
 
         else:
             self.__background = geom.RoundedRect(
                 size=(self.__expand+2*self.__border_width,self.__initSize+2*self.__border_width),
                 radius=self.__rect_radius,
                 fillopacity=1,
-                fillcolor=colors[1],
-                color="000000",
+                fillcolor=self.__background_color,
+                color=self.__border_color,
                 parent=self)
-            self.__background.pos = -self.__border_width,-self.__border_width
 
-        # stretching background node
-        self.stretch_rect = geom.RoundedRect(
-            size=(self.__initSize,self.__initSize),
-            radius=self.__rect_radius,
-            fillopacity=1,
-            fillcolor=colors[1],
-            color=colors[1],
-            parent=self)
+        bgsize = self.__background.size
+        self.__background.pos = bw,bw
+        self.size = bgsize[0]+2*bw, bgsize[1]+2*bw
 
         # knob
         self.__knob = geom.RoundedRect(
             size=(self.__initSize,self.__initSize),
             radius=self.__rect_radius,
             fillopacity=1,
-            fillcolor=colors[2],
-            color=colors[1],
-            strokewidth=3,
+            fillcolor=self.__knob_color,
+            color=self.__knob_color,
+            strokewidth=0,
             parent=self)
-        self.__knob.pos=(0,0)
+        self.__knob.pos=(2*bw,2*bw)
 
         # setup the knob
         self.__centerKnob()
@@ -97,16 +94,17 @@ class SnapSwitch(WidgetBase):
 
     def __centerKnob(self):
         # setup the knob
+        bw = self.__border_width
         if self.__orientation == Orientation.HORIZONTAL:
-            self.__max_dist =  (self.__expand/2-self.__knob.size[0]/2)
-            self.__min_dist = -(self.__expand/2-self.__knob.size[0]/2)
-            self.__knob.pos = (self.__max_dist,0)
-            self.__knob_pos = (self.__max_dist,0)
+            self.__max_dist =  (self.__expand/2-(self.__knob.size[0]-bw)/2)
+            self.__min_dist = -(self.__expand/2-(self.__knob.size[0]+bw)/2)
+            self.__knob.pos = (self.__max_dist+bw,2*bw)
+            self.__knob_pos = (self.__max_dist+bw,2*bw)
         if self.__orientation == Orientation.VERTICAL:
-            self.__max_dist =  (self.__expand/2-self.__knob.size[1]/2)
-            self.__min_dist = -(self.__expand/2-self.__knob.size[1]/2)
-            self.__knob.pos = (0,self.__max_dist)
-            self.__knob_pos = (0,self.__max_dist)
+            self.__max_dist =  (self.__expand/2-(self.__knob.size[1]-bw)/2)
+            self.__min_dist = -(self.__expand/2-(self.__knob.size[1]+bw)/2)
+            self.__knob.pos = (2*bw,self.__max_dist+bw)
+            self.__knob_pos = (2*bw,self.__max_dist+bw)
 
 
     def __onDetected(self):
