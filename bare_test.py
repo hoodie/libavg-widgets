@@ -26,11 +26,19 @@ class MyMainDiv(app.MainDiv):
         snap1.subscribe(SnapSwitch.STATE_CHANGED, print)
         snap2.subscribe(SnapSwitch.STATE_CHANGED, print)
 
-        slider1 = TouchSlider( pos = (15,320), width= 500, height = 25, parent = self)
-        slider2 = TouchSlider( pos = (15,350), width= 500, height = 25, value = 75, range=(0,200),parent = self)
-        slider2.subscribe(TouchSlider.VALUE_CANGED, print)
-        slider2.subscribe(TouchSlider.RELEASED, print)
+        slider1 = TouchSlider( pos = (15,320), width= 500, height = 35, parent = self)
+        slider2 = TouchSlider( pos = (15,400), width= 600, height = 55, value = 75, range=(0,100), steps = [0,10,15,30,50,80,100], parent = self)
+        slider2.subscribe(TouchSlider.VALUE_CHANGED, lambda v: print("value changed: {}".format(v)))
+        slider2.subscribe(TouchSlider.RELEASED, lambda v:     print("released at:   {}".format(v)))
+        slider2.subscribe(TouchSlider.STEPPED, lambda v:      print("stepped to:    {}".format(v)))
 
+        slider3 = TouchSlider(
+                pos = (self.width-90,50),
+                width= 35, height = 300,
+                value = 75,
+                range=(0,100),
+                steps = [0,25,50,75,100],
+                parent = self)
 
 
     def onExit(self):

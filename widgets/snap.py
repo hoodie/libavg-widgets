@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-from libavg import avg, gesture, geom, DivNode
+from libavg import avg, gesture, geom, DivNode, WordsNode
 from libavg.widget import Orientation
 from widgetbase import WidgetBase
 
@@ -31,7 +31,7 @@ class Slidable(DivNode):
             if min(self.size) == 0:
                 if self.orientation == Orientation.HORIZONTAL:
                     self.size = (250,80)
-                else:
+                if self.orientation == Orientation.VERTICAL:
                     self.size = (80,250)
 
         # values
@@ -183,6 +183,7 @@ class SnapSwitch(Slidable):
     def onHorizEnd(self): self.onDragEnd()
     def onVertEnd(self): self.onDragEnd()
 
+    def onDrag(self): pass
     def onDragEnd(self):
         self.resetThumb()
         self.resetState()
@@ -212,7 +213,7 @@ class TouchSlider(Slidable):
 
     RELEASED     = avg.Publisher.genMessageID()
     STEPPED      = avg.Publisher.genMessageID()
-    VALUE_CANGED = avg.Publisher.genMessageID()
+    VALUE_CHANGED = avg.Publisher.genMessageID()
 
     # FIXME: Ranges from x..y where x>0
 
@@ -221,6 +222,7 @@ class TouchSlider(Slidable):
             border_width = 0,
             range=(0,100),
             value=0,
+            steps = [],
             padding = 0,
             **kwargs):
         super(TouchSlider, self).__init__(
@@ -231,22 +233,24 @@ class TouchSlider(Slidable):
 
         self.publish(TouchSlider.RELEASED)
         self.publish(TouchSlider.STEPPED)
-        self.publish(TouchSlider.VALUE_CANGED)
+        self.publish(TouchSlider.VALUE_CHANGED)
 
+        self.steps = steps
         self.__range=range
         self.value = value
 
-        if self.orientation == Orientation.HORIZONTAL:
-            thumb_center = self.thumb.size[0]/2
-            bar_center  = self.padding/2
-            pos = (self.width/(self.__range[1]-self.__range[0]))*value
-            self.thumb.pos = (pos, bar_center)
-        if self.orientation == Orientation.VERTICAL:
-            thumb_center = self.thumb.size[1]/2
-            bar_center  = self.padding/2
-            pos = ( self.height/( self.__range[1]-self.__range[0]))*value
-            self.thumb.pos = ( bar_center, pos)
+        self.setValue(value)
+
         self.initRecognizers()
+        if len(steps) > 0:
+            self.addMarkers()
+            self.subscribe(TouchSlider.RELEASED, self.__jumpToStep)
+
+    def setValue(self,value):
+        self.value = value
+        self.thumb.pos = self.placeOnBar(self.thumb,value)
+        self.notifySubscribers(TouchSlider.VALUE_CHANGED, [self.value])
+
 
     def resetThumb(self): print("resetting slider")
 
@@ -256,10 +260,97 @@ class TouchSlider(Slidable):
     def onDrag(self):
         if self.orientation == Orientation.HORIZONTAL:
             self.value = (self.thumb.pos[0]*(self.__range[1]-self.__range[0]))/self.max_horizontal + self.__range[0]
-        else:
+        if self.orientation == Orientation.VERTICAL:
             self.value = (self.thumb.pos[1]*(self.__range[1]-self.__range[0]))/self.max_vertical + self.__range[0]
-        self.notifySubscribers(TouchSlider.VALUE_CANGED, [self.value]);
+        self.notifySubscribers(TouchSlider.VALUE_CHANGED, [self.value]);
 
     def onDragEnd(self):
         self.notifySubscribers(self.RELEASED, [self.value])
 
+    def addMarkers(self):
+        """
+        draws markers at indicating possible steps
+        takes place before parent init
+        """
+
+        for index, step in enumerate(self.steps):
+            self.addMarker(index,step)
+
+    # sets the position of an Node
+    def placeOnBar(self, node, step, size=None):
+        if size == None: size = node.size
+
+        if self.orientation == Orientation.HORIZONTAL:
+            thumb = self.thumb.size[0]
+            marker_pos=(
+                    ((self.width-thumb)/ self.__range[1])
+                    *step-size[0]/2
+                    + thumb/2,
+                    0 )
+
+        if self.orientation == Orientation.VERTICAL:
+            thumb = self.thumb.size[1]
+            marker_pos=( 0 ,
+                    ((self.height-thumb)/ self.__range[1])
+                    *step-size[1]/2
+                    + thumb/2)
+
+        return marker_pos
+
+
+
+    def addMarker(self,index,step):
+        marker = DivNode(sensitive=False)
+        color = "FFFFFF"
+
+        if self.orientation == Orientation.HORIZONTAL:
+            marker.size = 5,self.height
+            label_pos = (marker.size[0]/2,marker.size[1]+3)
+            label_alignment="center"
+
+        if self.orientation == Orientation.VERTICAL:
+            marker.size = self.width,5
+            label_pos = (marker.size[0]+10,marker.size[1]/2)
+            label_alignment="left"
+
+        marker.pos = self.placeOnBar(marker, step)
+        marker.tapRecognizer = gesture.TapRecognizer(
+                node            = marker,
+                maxDist         = 20,
+                initialEvent    = None,
+                possibleHandler = None,
+                failHandler     = None,
+                detectedHandler = lambda:  self.setStep(index)
+                )
+
+
+        geom.RoundedRect(
+                size=marker.size,
+                radius=2,
+                fillcolor=color,
+                fillopacity=1,
+                opacity=0,
+                parent = marker)
+
+        WordsNode(
+                pos = label_pos,
+                text=str(step),
+                color=color,
+                fontsize=10,
+                alignment=label_alignment,
+                parent = marker)
+
+        self.appendChild(marker)
+
+    def __jumpToStep(self, value):
+        min_dist = None
+        min_dist_index = 0
+
+        for index, step in enumerate(self.steps):
+            dist = abs(step - self.value)
+            if min_dist == None or dist < min_dist:
+                min_dist = dist
+                min_dist_index = index
+
+        self.setValue(self.steps[min_dist_index])
+        self.notifySubscribers(self.STEPPED, [self.value])
