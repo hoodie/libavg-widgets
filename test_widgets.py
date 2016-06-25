@@ -11,7 +11,7 @@ from widgets import VLayout, HLayout, Layout, GridLayout, WidgetBase, Orientatio
 from widgets import ButtonBar, ToggleButtonBar, VLayout, HLayout, Orientation
 from widgets import Label
 from widgets import StepSlider
-from widgets import SnapSwitch
+from widgets import SnapSwitch, TouchSlider
 
 class MainDiv(app.MainDiv):
 
@@ -48,13 +48,20 @@ class MainDiv(app.MainDiv):
         grid.appendChild( step_slider )
 
 
-        # Vertical StepSlider
+        # SnapSwitch
         switch_slider = SnapSwitch(
-                initSize=80,
+                size=(160,80),
                 #orientation = Orientation.VERTICAL
                 )
         grid.appendChild(Label("switch slider",color="FFFFFF"))
         grid.appendChild( switch_slider )
+
+        # My own Touch Slider
+        touch_slider = TouchSlider(
+                size=(610,50),
+                )
+        grid.appendChild(Label("touch slider",color="FFFFFF"))
+        grid.appendChild( touch_slider )
 
         mainlayout.appendChild(grid)
 
