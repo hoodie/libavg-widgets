@@ -84,7 +84,7 @@ class Slidable(DivNode):
 
     def initRecognizers(self):
         if self.orientation == Orientation.HORIZONTAL:
-            self.recognizer = gesture.DragRecognizer(
+            self.dragRecognizer = gesture.DragRecognizer(
                 eventNode=self.thumb,
                 detectedHandler=self.__onDetected,
                 moveHandler=self.onHorizMove,
@@ -92,7 +92,7 @@ class Slidable(DivNode):
                 direction=gesture.DragRecognizer.HORIZONTAL,
                 friction=self.friction)
         if self.orientation == Orientation.VERTICAL:
-            self.recognizer = gesture.DragRecognizer(
+            self.dragRecognizer = gesture.DragRecognizer(
                 eventNode=self.thumb,
                 detectedHandler=self.__onDetected,
                 moveHandler=self.onVertMove,
@@ -210,7 +210,6 @@ class SnapSwitch(Slidable):
 
 
 class TouchSlider(Slidable):
-
     RELEASED     = avg.Publisher.genMessageID()
     STEPPED      = avg.Publisher.genMessageID()
     VALUE_CHANGED = avg.Publisher.genMessageID()
@@ -222,6 +221,8 @@ class TouchSlider(Slidable):
             border_width = 0,
             range=(0,100),
             value=0,
+            snap= False,
+            snap_dist = 1000000,
             steps = [],
             padding = 0,
             **kwargs):
@@ -236,6 +237,7 @@ class TouchSlider(Slidable):
         self.publish(TouchSlider.VALUE_CHANGED)
 
         self.steps = steps
+        self.snap_dist = snap_dist
         self.__range=range
         self.value = value
 
@@ -244,7 +246,7 @@ class TouchSlider(Slidable):
         self.initRecognizers()
         if len(steps) > 0:
             self.addMarkers()
-            self.subscribe(TouchSlider.RELEASED, self.__jumpToStep)
+            if snap: self.subscribe(TouchSlider.RELEASED, self.jumpToStep)
 
     def setValue(self,value):
         self.value = value
@@ -274,7 +276,7 @@ class TouchSlider(Slidable):
         """
 
         for index, step in enumerate(self.steps):
-            self.addMarker(index,step)
+            self.addMarker(index)
 
     # sets the position of an Node
     def placeOnBar(self, node, step, size=None):
@@ -299,33 +301,23 @@ class TouchSlider(Slidable):
 
 
 
-    def addMarker(self,index,step):
-        marker = DivNode(sensitive=False)
+    #  overwrite this
+    def drawMarker(self, size, index, orientation): # -> DivNode
         color = "FFFFFF"
+        sensitive = True
+        marker = DivNode(sensitive=sensitive)
+        marker.size = size #max(size), max(size)
 
         if self.orientation == Orientation.HORIZONTAL:
-            marker.size = 5,self.height
             label_pos = (marker.size[0]/2,marker.size[1]+3)
             label_alignment="center"
 
         if self.orientation == Orientation.VERTICAL:
-            marker.size = self.width,5
             label_pos = (marker.size[0]+10,marker.size[1]/2)
             label_alignment="left"
 
-        marker.pos = self.placeOnBar(marker, step)
-        marker.tapRecognizer = gesture.TapRecognizer(
-                node            = marker,
-                maxDist         = 20,
-                initialEvent    = None,
-                possibleHandler = None,
-                failHandler     = None,
-                detectedHandler = lambda:  self.setStep(index)
-                )
-
-
-        geom.RoundedRect(
-                size=marker.size,
+        bar = geom.RoundedRect(
+                size=size,
                 radius=2,
                 fillcolor=color,
                 fillopacity=1,
@@ -334,15 +326,36 @@ class TouchSlider(Slidable):
 
         WordsNode(
                 pos = label_pos,
-                text=str(step),
+                text=str(index),
                 color=color,
                 fontsize=10,
                 alignment=label_alignment,
                 parent = marker)
 
+        return marker
+
+    #TODO def addMarkerByIndex(self,index): both by step and by index
+    def addMarker(self,index):
+        if self.orientation == Orientation.HORIZONTAL:
+            marker_size = 5,self.height
+        if self.orientation == Orientation.VERTICAL:
+            marker_size = self.width,5
+
+        marker = self.drawMarker(marker_size, index, self.orientation)
+        marker.tapRecognizer = gesture.TapRecognizer(
+                node            = marker,
+                maxDist         = 30,
+                initialEvent    = None,
+                possibleHandler = None,
+                failHandler     = None,
+                detectedHandler = lambda:  self.setValue(self.steps[index]))
+
+
+        marker.pos = self.placeOnBar(marker, self.steps[index])
         self.appendChild(marker)
 
-    def __jumpToStep(self, value):
+    def jumpToStep(self, value):
+        print("jump to value", value)
         min_dist = None
         min_dist_index = 0
 
@@ -352,5 +365,6 @@ class TouchSlider(Slidable):
                 min_dist = dist
                 min_dist_index = index
 
-        self.setValue(self.steps[min_dist_index])
+        if min_dist < self.snap_dist:
+            self.setValue(self.steps[min_dist_index])
         self.notifySubscribers(self.STEPPED, [self.value])

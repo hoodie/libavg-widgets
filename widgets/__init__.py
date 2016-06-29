@@ -33,6 +33,7 @@ def LayoutBackground(color, size= (0, 0), opacity = 1):
 
 #[deprecated]
 def Label(string, color="000000", size=20):
+    deprecated()
     return avg.WordsNode(text = string, color=color, fontsize=size)
 
 def keepNodeInRect(node, tl, br):
@@ -46,3 +47,7 @@ def keepNodeInRect(node, tl, br):
         node.pos = (node.pos.x, tl.y-node.size.y/2)
     if center.y > br.y:
         node.pos = (node.pos.x, br.y-node.size.y/2)
+import inspect
+def deprecated():
+        print("DEPRECATED: {} called from {}".format( inspect.stack()[1][3], inspect.stack()[2][1:3]) )
+

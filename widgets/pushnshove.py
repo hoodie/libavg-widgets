@@ -7,6 +7,11 @@ from libavg import avg, gesture, DivNode, RectNode, Point2D
 # a mixin that holds functionality for basic push and shove wall applications
 class PushNShove():
 
+    # Members:
+    #
+    # self.__floating_windows : [DivNode]
+    # self.__connected_windows : [(DivNode,DivNode, PolygonNode)]
+
     # The Background is currently listening for events -> don't react
     BACKGROUND_SUBSCRIBED = False
 
@@ -32,6 +37,14 @@ class PushNShove():
                 window_decoration,
                 decoration_height
                 )
+
+        # keeping a list of floating windows
+        try:
+            self.__floating_windows.append(window)
+        except AttributeError:
+            self.__floating_windows = []
+            self.__floating_windows.append(window)
+
 
         def tapPossible(): #print "Push-N-Shove " + sys._getframe().f_code.co_name+"()"
             window.previous_size = window.size
@@ -90,6 +103,19 @@ class PushNShove():
             self.placeRandomlyOnScreen(window)
         else:
             window.pos = pos
+
+    # adds a connection to self.__connections
+    def connectWindows(self, window_a, window_b): # -> bool
+        # TODO finish me
+        try:
+            if window_a in self.__floating_windows() and window_b in self.__floating_windows():
+                self.__connected_windows
+            return True
+        except:
+            return False
+
+
+
 
     def makeNotTransformable(self, window):
         window.transformRecognizer = None
@@ -162,6 +188,7 @@ class PushNShove():
 
         window.transformRecognizer = gesture.TransformRecognizer(
                 eventNode       = window.decoration,
+                coordSysNode    = window,
                 detectedHandler = transformDetected,
                 moveHandler     = transformMove,
                 upHandler       = transformUp,
