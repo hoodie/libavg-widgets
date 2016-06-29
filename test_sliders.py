@@ -15,24 +15,31 @@ from widgets import SnapSwitch,TouchSlider
 
 class MyMainDiv(app.MainDiv):
     def onInit(self):
-        snap1 = SnapSwitch( size= (20,230))
+        snap1 = SnapSwitch( size= (20,120))
         snap2 = SnapSwitch( orientation = Orientation.HORIZONTAL)
         self.appendChild( snap1 )
         self.appendChild( snap2 )
 
-        snap1.pos =  50,50
-        snap2.pos = 300,50
+        snap1.pos =  50,20
+        snap2.pos = 300,20
 
         snap1.subscribe(SnapSwitch.STATE_CHANGED, print)
         snap2.subscribe(SnapSwitch.STATE_CHANGED, print)
 
-        slider1 = TouchSlider( pos = (15,320), width= 500, height = 35, parent = self)
-        slider2 = TouchSlider( pos = (15,400), width= 600, height = 55, value = 75, range=(0,100), steps = [0,10,15,30,50,80,100], parent = self)
-        slider2.subscribe(TouchSlider.VALUE_CHANGED, lambda v: print("value changed: {}".format(v)))
-        slider2.subscribe(TouchSlider.RELEASED, lambda v:     print("released at:   {}".format(v)))
-        slider2.subscribe(TouchSlider.STEPPED, lambda v:      print("stepped to:    {}".format(v)))
+        TouchSlider( pos = (15,170), width= 500, height = 35, parent = self, padding =-15)
+        TouchSlider( pos = (15,230), width= 500, height = 35,
+                steps = [0,10,20,40,80,100], parent = self)
+        TouchSlider( pos = (15,290), width= 500, height = 35,
+                steps = [0,10,20,40,80,100], snap = True, parent = self)
+        TouchSlider( pos = (15,350), width= 500, height = 35,
+                steps = [0,10,20,40,80,100], snap = True,snap_dist = 5, parent = self)
 
-        slider3 = TouchSlider(
+        slider3 = TouchSlider( pos = (15,400), width= 600, height = 55, value = 75, range=(0,100), steps = [0,10,15,30,50,80,100], parent = self)
+        slider3.subscribe(TouchSlider.VALUE_CHANGED, lambda v: print("value changed: {}".format(v)))
+        slider3.subscribe(TouchSlider.RELEASED, lambda v:     print("released at:   {}".format(v)))
+        slider3.subscribe(TouchSlider.STEPPED, lambda v:      print("stepped to:    {}".format(v)))
+
+        slider4 = TouchSlider(
                 pos = (self.width-90,50),
                 width= 35, height = 300,
                 value = 75,

@@ -43,7 +43,7 @@ class MainDiv(app.MainDiv):
                     width=500,
                     steps=[0,20,25,50,80, 100])
         step_slider.subscribe(StepSlider.RELEASED, lambda: print("released at ", step_slider.thumbPos))
-        step_slider.subscribe(StepSlider.STEPPED, lambda: print("jumped to ", step_slider.thumbPos))
+        step_slider.subscribe(StepSlider.STEPPED, lambda e: print("jumped to ", step_slider.thumbPos, e))
         step_slider.subscribe(StepSlider.THUMB_POS_CHANGED, lambda _pos: print("changed to ", step_slider.thumbPos))
         grid.appendChild( step_slider )
 
