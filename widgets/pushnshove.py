@@ -22,7 +22,7 @@ class PushNShove():
             resizeable        = False,
             keep_on_screen    = True, # not yet implemented
             window_decoration = True,
-            decoration_height = 35,
+            decoration_height = 30,
             tap_callback      = None,
             hold_callback     = None,
             zoom_in_callback  = None,
@@ -212,28 +212,40 @@ class PushNShove():
         window = DivNode()
         window.crop = True
         border_width = 5
+        decoration_color = "555555"
+        border_color = "666666"
         if decoration:
-            window.border= RectNode(
-                    strokewidth = 5,
+            window.background= RectNode(
+                    strokewidth = 3,
                     pos = (0,0),
                     size =  (node.size[0]+2*border_width, node.size[1]+2*border_width+decoration_height),
-                    color="FFFFFF",
+                    color="0000ff",
                     opacity=1,
-                    fillcolor="FFFFFF",
-                    fillopacity=1,)
+                    fillcolor="000000",
+                    fillopacity=.3,sensitive=False)
+
+            window.border = RectNode(
+                    strokewidth = 3,
+                    pos = (0,0),
+                    size =  (node.size[0]+2*border_width, node.size[1]+2*border_width+decoration_height),
+                    color=border_color,
+                    opacity=1,
+                    fillcolor="FF5555",
+                    fillopacity=0.0,sensitive = False)
 
             window.decoration = RectNode(
                     fillopacity=.8,
                     pos = (border_width,border_width),
                     size =  (node.size[0], decoration_height),
-                    fillcolor="2299bb")
+                    fillcolor=decoration_color)
 
             window.size = (
                     node.size[0]+2*border_width,
                     node.size[1]+decoration_height+2*border_width)
 
-            window.appendChild(window.border)
             window.appendChild(node)
+            window.appendChild(window.background)
+            window.appendChild(window.border)
             window.appendChild(window.decoration)
             node.pos=(0+border_width,decoration_height+border_width)
         else:
