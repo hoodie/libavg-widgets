@@ -211,7 +211,7 @@ class PushNShove():
     def __wrapNodeInWindow(self, node, decoration,decoration_height): #-> Window: DivNode
         window = DivNode()
         window.crop = True
-        border_width = 5
+        border_width = 0
         decoration_color = "555555"
         border_color = "666666"
         if decoration:
@@ -237,6 +237,7 @@ class PushNShove():
                     fillopacity=.8,
                     pos = (border_width,border_width),
                     size =  (node.size[0], decoration_height),
+                    color=decoration_color,
                     fillcolor=decoration_color)
 
             window.size = (
