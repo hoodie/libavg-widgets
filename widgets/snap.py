@@ -6,11 +6,12 @@ from libavg.widget import Orientation
 from widgetbase import WidgetBase
 
 class Slidable(DivNode):
+    TAPPED = avg.Publisher.genMessageID()
     def __init__(self,
             orientation=None,
-            thumb_color = "AAAAAA",
+            thumb_color = "777777",
             border_color = "FFFFFF",
-            background_color = "444444",
+            background_color = "333333",
             border_width = 1,
             padding = None,
             parent = None,
@@ -18,6 +19,7 @@ class Slidable(DivNode):
         super(Slidable, self).__init__(**kwargs)
         self.registerInstance(self, parent)
         self.crop = False
+        self.publish(Slidable.TAPPED)
 
         if orientation == None:
             if min(self.size) == 0:
@@ -61,12 +63,18 @@ class Slidable(DivNode):
         self.background = geom.RoundedRect(
             size = self.size,
             radius=self.rect_radius,
+            opacity=0,
             fillopacity=1,
             fillcolor=self.background_color,
             strokewidth=self.border_width,
             color=self.border_color,
             parent=self)
 
+        def handle_cursor(event):
+            tapped = self.background.getRelPos(event.contact.events[0].pos)[0]/self.background.size[0]
+            self.notifySubscribers(Slidable.TAPPED, [tapped])
+
+        self.background.subscribe( self.background.CURSOR_DOWN, handle_cursor )
         self.background.pos = 0,0
 
         # thumb
@@ -133,6 +141,7 @@ class SnapSwitch(Slidable):
         super(SnapSwitch, self).__init__(**kwargs)
         self.publish(self.STATE_CHANGED)
         self.publish(SnapSwitch.RELEASED)
+
 
         # put the thumb in the middle
         if self.orientation == Orientation.HORIZONTAL:
@@ -252,9 +261,12 @@ class TouchSlider(Slidable):
             #print("TouchSlider: enabling snap")
             self.subscribe(TouchSlider.RELEASED, self.jumpToStep)
 
-    def setValue(self,value):
+        self.subscribe(Slidable.TAPPED, lambda val: self.setValue(val*self.__range[1], jump_to_step=True))
+
+    def setValue(self,value, jump_to_step = False):
         self.value = value
         self.thumb.pos = self.placeOnBar(self.thumb,value)
+        if jump_to_step: self.jumpToStep(value)
         self.notifySubscribers(TouchSlider.VALUE_CHANGED, [self.value])
 
 
