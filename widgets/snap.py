@@ -3,19 +3,19 @@ from __future__ import print_function
 
 from libavg import avg, gesture, geom, DivNode, WordsNode
 from libavg.widget import Orientation
-from widgetbase import WidgetBase
 
 class Slidable(DivNode):
     TAPPED = avg.Publisher.genMessageID()
+
     def __init__(self,
-            orientation=None,
-            thumb_color = "777777",
-            border_color = "FFFFFF",
-            background_color = "333333",
-            border_width = 1,
-            padding = None,
-            parent = None,
-            **kwargs):
+                 orientation=None,
+                 thumb_color = "777777",
+                 border_color = "FFFFFF",
+                 background_color = "333333",
+                 border_width = 1,
+                 padding = None,
+                 parent = None,
+                 **kwargs):
         super(Slidable, self).__init__(**kwargs)
         self.registerInstance(self, parent)
         self.crop = False
@@ -263,11 +263,11 @@ class TouchSlider(Slidable):
 
         self.subscribe(Slidable.TAPPED, lambda val: self.setValue(val*self.__range[1], jump_to_step=True))
 
-    def setValue(self,value, jump_to_step = False):
+    def setValue(self,value, jump_to_step = False, notify=True):
         self.value = value
         self.thumb.pos = self.placeOnBar(self.thumb,value)
         if jump_to_step: self.jumpToStep(value)
-        self.notifySubscribers(TouchSlider.VALUE_CHANGED, [self.value])
+        if notify: self.notifySubscribers(TouchSlider.VALUE_CHANGED, [self.value])
 
 
     def resetThumb(self): pass #print("TouchSlider: resetting slider")
