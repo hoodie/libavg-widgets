@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-from libavg import avg, gesture, geom, DivNode, WordsNode
+from libavg import avg, gesture, DivNode, WordsNode
+from libavg.geom   import RoundedRect
 from libavg.widget import Orientation
 
 class Slidable(DivNode):
@@ -10,8 +11,10 @@ class Slidable(DivNode):
     def __init__(self,
                  orientation=None,
                  thumb_color = "777777",
+                 font_color = "FFFFFF",
                  border_color = "FFFFFF",
                  background_color = "333333",
+                 thumb_label=False,
                  border_width = 1,
                  padding = None,
                  parent = None,
@@ -44,12 +47,14 @@ class Slidable(DivNode):
         else:
             self.padding = float(padding)
 
-        self.rect_radius  = self.initSize-self.padding
-        self.friction     = -1
-        self.thumb_color       = thumb_color
+        self.rect_radius      = self.initSize-self.padding
+        self.friction         = -1
+        self.thumb_color      = thumb_color
+        self.font_color       = font_color
         self.border_color     = border_color
         self.background_color = background_color
-        self.border_width = border_width
+        self.border_width     = border_width
+        self.thumb_label_on   = thumb_label
 
 
 
@@ -60,7 +65,7 @@ class Slidable(DivNode):
 
     def initGraphics(self):
 
-        self.background = geom.RoundedRect(
+        self.background = RoundedRect(
             size = self.size,
             radius=self.rect_radius,
             opacity=0,
@@ -77,15 +82,31 @@ class Slidable(DivNode):
         self.background.subscribe( self.background.CURSOR_DOWN, handle_cursor )
         self.background.pos = 0,0
 
+        thumb_size=(self.initSize-self.padding,self.initSize-self.padding)
         # thumb
-        self.thumb = geom.RoundedRect(
-            size=(self.initSize-self.padding,self.initSize-self.padding),
-            radius=self.rect_radius,
-            fillopacity=1,
-            fillcolor=self.thumb_color,
-            color=self.thumb_color,
-            strokewidth=0,
-            parent=self)
+        self.thumb = DivNode(pos         = (0,0),
+                             size        = thumb_size,
+                             parent = self)
+
+        RoundedRect(pos         = (0,0),
+                    size        = thumb_size,
+                    radius      = self.rect_radius,
+                    fillopacity = 1,
+                    fillcolor   = self.thumb_color,
+                    color       = self.thumb_color,
+                    strokewidth = 0,
+                    parent      = self.thumb)
+
+        fontsize = 12
+        if self.thumb_label_on:
+            self.thumb_label = WordsNode(
+                    pos = (thumb_size[0]/2, thumb_size[1]/2-fontsize/2),
+                    color=self.font_color,
+                    fontsize=fontsize,
+                    alignment="center",
+                    parent = self.thumb)
+        else: self.thumb_label = None
+
 
 
 
@@ -225,16 +246,25 @@ class TouchSlider(Slidable):
 
     # FIXME: Ranges from x..y where x>0
 
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, v):
+        if self.thumb_label: self.thumb_label.text = str(int(v))
+        self.__value = v
+
     def __init__(self,
-            orientation=None,
-            border_width = 0,
-            range=(0,100),
-            value=0,
-            snap= False,
-            snap_dist = 1000000,
-            steps = [],
-            padding = 0,
-            **kwargs):
+                 orientation=None,
+                 border_width = 0,
+                 range=(0,100),
+                 value=0,
+                 snap= False,
+                 snap_dist = 1000000,
+                 steps = [],
+                 padding = 0,
+                 **kwargs):
         super(TouchSlider, self).__init__(
                 orientation=orientation,
                 border_width = border_width,
@@ -250,7 +280,7 @@ class TouchSlider(Slidable):
 
         self.steps = steps
         self.snap_dist = snap_dist
-        self.value = value
+        self.__value = value
 
         self.setValue(value)
 
@@ -363,7 +393,7 @@ class TouchSlider(Slidable):
             label_pos = (marker.size[0]+10,marker.size[1]/2)
             label_alignment="left"
 
-        bar = geom.RoundedRect(
+        bar = RoundedRect(
                 size=size,
                 radius=2,
                 fillcolor=color,
