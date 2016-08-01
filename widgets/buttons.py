@@ -45,6 +45,7 @@ def ToggleButton(svgId,
                  tag=None,
                  size=widget_config.ICON_SIZE,
                  color= "c0c0c0",
+                 onToggled = None,
                  opacity = .5,
                  **kwargs):
 
@@ -56,5 +57,7 @@ def ToggleButton(svgId,
     down.appendChild(buttonImg(svgId, size))
 
     btn = avg_widget.ToggleButton(up, up, down, down, size = (size, size), **kwargs)
+    if onToggled != None:
+        btn.subscribe(avg_widget.ToggleButton.TOGGLED, onToggled)
     btn.tag = tag
     return btn
