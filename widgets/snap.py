@@ -421,11 +421,12 @@ class TouchSlider(Slidable):
                 min_dist = dist
                 min_dist_index = index
 
-        print("TouchSlider: jump to step from", value, "to", min_dist_index)
-        print("             min_dist = {} snap_dist = {}".format(min_dist,self.snap_dist))
+        #print("TouchSlider: jump to step from", value, "to", min_dist_index)
+        #print("             min_dist = {} snap_dist = {}".format(min_dist,self.snap_dist))
         if min_dist < self.snap_dist and min_dist_index < len(self.steps):
             self.setValue(self.steps[min_dist_index])
-            print("             actually stepping")
+            #print("             actually stepping")
         else:
-            print("             not stepping", self.steps)
+            #print("             not stepping", self.steps)
+            pass
         self.notifySubscribers(self.STEPPED, [self.value])
